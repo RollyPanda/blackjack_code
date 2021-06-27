@@ -69,6 +69,30 @@ class HandTest(unittest.TestCase):
         players_hand.add_card(Card("Diamonds", "A"))
         self.assertEqual(12, players_hand.total_value)
 
+    def test_hand_ace6(self):
+        players_hand = Hand()
+        players_hand.add_card(Card("Clubs", "A"))
+        players_hand.add_card(Card("Diamonds", "A"))
+        players_hand.add_card(Card("Spades", "A"))
+        self.assertEqual(13, players_hand.total_value)
+
+    def test_hand_ace7(self):
+        players_hand = Hand()
+        players_hand.add_card(Card("Clubs", "A"))
+        players_hand.add_card(Card("Diamonds", "A"))
+        players_hand.add_card(Card("Spades", "A"))
+        players_hand.add_card(Card("Hearts", "A"))
+        self.assertEqual(14, players_hand.total_value)
+
+    def test_hand_ace8(self):
+        players_hand = Hand()
+        players_hand.add_card(Card("Clubs", "A"))
+        players_hand.add_card(Card("Diamonds", "A"))
+        players_hand.add_card(Card("Spades", "A"))
+        players_hand.add_card(Card("Hearts", "A"))
+        players_hand.add_card(Card("Clubs", "K"))
+        self.assertEqual(14, players_hand.total_value)
+
 
 if __name__ == '__main__':
     unittest.main()

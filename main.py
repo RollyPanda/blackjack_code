@@ -1,4 +1,5 @@
 import random
+import time
 
 class Card:
     """Card class represents a basic playing card. The card has a suit and a rank"""
@@ -14,10 +15,8 @@ class Deck:
     """Deck class represents a collection of cards. It contains 52 unique cards (exclude red/black Jokers)"""
 
     def __init__(self):
-        cards = []
-        for i in ["Spades", "Hearts", "Diamonds", "Clubs"]:
-            for j in ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]:
-                cards.append((i, j))
+        cards = [Card(i, j) for i in ["Spades", "Hearts", "Diamonds", "Clubs"]
+         for j in ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]]
         self.cards = cards
 
     """Shuffle the cards in a deck"""
@@ -27,10 +26,9 @@ class Deck:
     """The dealer deals cards from the deck to the players"""
 
     def deal(self):
-        self.cards.pop(random.randint(0, len(self.cards) - 1))
+        return self.cards.pop()
 
     def __str__(self):
-        self.shuffle()
         return "\n".join([str(card) for card in self.cards])
 
 class Hand:
@@ -43,26 +41,27 @@ class Hand:
 
     def add_card(self, card):
         """
-        Whenever a card is added to the hand, the value will be calculated. For each 'ACE' card, treat it as 11.
-        While the total value is over 21, subtract 10 from the total value for each 'ACE' card, one by one
+        Whenever a card is added to the hand, the value will be calculated. For each 'A'#'ACE' card, treat it as 11.
+        While the total value is over 21, subtract 10 from the total value for each 'A'#'ACE' card, one by one
         :param card:
         :return:
         """
         if card.rank == "A":
-            self.cards.append("A")
+            self.cards.append(card)
             self.total_value += 11
             self.ace_count += 1
             if self.total_value > 21:
                 self.total_value -= 10
-        elif card.rank in [2, 3, 4, 5, 6, 7, 8, 9]:
-            self.cards.append(card.rank)
+        elif card.rank in map(str, range(2, 10)):
+            self.cards.append(card)
             self.total_value += int(card.rank)
-        elif card.rank in [10, "J", "Q", "K"]:
-            self.cards.append(card.rank)
-            self.total_value += 10
+            if self.total_value > 21 and self.ace_count >= 1:
+                self.total_value -= 10
         else:
-            self.cards.append(card.rank)
-            self.total_value += int(card.rank)
+            self.cards.append(card)
+            self.total_value += 10
+            if self.total_value > 21 and self.ace_count >= 1:
+                self.total_value -= 10
 
     def __str__(self):
         return "\n".join([str(card) for card in self.cards]) + f"\nTotal Value: {self.total_value}\n"
@@ -160,4 +159,115 @@ class Game:
 
 # Entry point of the program
 if __name__ == "__main__":
-    Game()
+    # other_stuff:
+
+        # game = Game()
+        # game.play()
+        # deck = Deck()
+        # deck.shuffle()
+        # print(deck)
+        # card = Card("Spades", "A")
+        # card1 = Card("Diamonds", "10")
+        # deck = Deck()
+        # deck.shuffle()
+        # card = deck.deal()
+        # hand = Hand()
+        # hand.add_card(deck.deal())
+        # hand.add_card(deck.deal())
+        # print(hand)
+
+        # other game
+
+        # noah_hand = Hand()
+        # noah_hand.add_card(Card("Spades", "A"))
+        # noah_hand.add_card(Card("Hearts", "A"))
+        # noah_hand.add_card(Card("Diamonds", "K"))
+
+
+        # eric_hand = Hand()
+        # eric_hand.add_card(deck.deal())
+        # eric_hand.add_card(deck.deal())
+        # eric_hand.add_card(deck.deal())
+
+        # print("Noah:\n", noah_hand)
+        # print("Eric:\n", eric_hand)
+        # if noah_hand.total_value > eric_hand.total_value:
+        #     print("Noah")
+        # elif eric_hand.total_value > noah_hand.total_value: 
+        #     print("Eric") 
+        # else: 
+        #     print("Tie")
+    
+    # BlackJack Game:
+    # Create a deck
+    deck = Deck()
+    # Shuffle the deck
+    deck.shuffle()
+    # Make all the hands
+    dealer = Hand()
+    player = Hand()
+    # Show opening statment
+    a = ""
+    Game.show_opening_statement(a)
+    # Deal two cards
+    for i in range(2):
+        player.add_card(deck.deal())
+    while dealer.total_value <= 17:
+        dealer.add_card(deck.deal())
+    if dealer.total_value > 21:
+        print("PLAYER'S HAND (YOUR HAND):\n", player, "DELAER BUSTED!!! YOU WIN!!!")
+        print("DEALER'S HAND:\n", dealer, "DELAER BUSTED!!!!!")
+        player_choice = None
+        dealer_choice = None
+    elif player.total_value > 21:
+        print("PLAYER'S HAND (YOUR HAND):\n", player, "YOU BUSTED!!! YOU LOSE!!!")
+        print("DEALER'S HAND:\n", dealer)
+        player_choice = None
+        dealer_choice = None
+    elif player.total_value > 21 and dealer.total_value > 21:
+        print("PLAYER'S HAND (YOUR HAND):\n", player)
+        print("DEALER'S HAND:\n", dealer)
+        print("YOU BOTH BUSTED!!!!!")
+        player_choice = None
+        dealer_choice = None
+    else:
+        print("PLAYER'S HAND (YOUR HAND):\n", player)
+        print("DEALER'S HAND:\n", dealer)
+        # Ask the choice of the player hit or stand
+        player_choice = input("Hit or Stand or Quit? H/S/Q: \n")
+        dealer_choice = "H"     
+    if (player_choice, dealer_choice) != (None, None):                                                                       
+    # See if the player's choice is hit or stand
+        while player_choice.upper().strip() not in ["H", "HI", "HIT", "HITHIT", "HITHITHIT", "1", "1.0", "ONE", "#1", "# 1", "NUMBER1", "NUMBER 1", "NUMBER_1", "FIRST", "H I T", "S", "ST", "STA", "STAN", "STAND", "STANDSTAND", "STANDSTANDSTAND", "2", "2.0", "TWO", "#1", "# 1", "NUMBER2", "NUMBER 2", "NUMBER_2", "FIRST", "S T A N D", "Q", "Qu", "QUI", "QUIT", "QUITQUIT", "QUITQUITQUIT", "3", "3.0", "THREE", "#3", "# 3", "NUMBER3", "NUMBER 3", "NUMBER_3", "THIRD", "Q U I T"]:
+            player_choice = input("That was not understood. Hit or Stand? H/S/Q: \n")
+        if player_choice.upper().strip() in ["H", "HH", "HHH", "HI", "HIT", "HITHIT", "HITHITHIT", "1", "1.0", "ONE", "#1", "# 1", "NUMBER1", "NUMBER 1", "NUMBER_1", "FIRST", "H I T"]:
+            player.add_card(deck.deal())
+        if player_choice.upper().strip() in ["S", "SS", "SSS", "ST", "STA", "STAN", "STAND", "STANDSTAND", "STANDSTANDSTAND", "2", "2.0", "TWO", "#1", "# 1", "NUMBER2", "NUMBER 2", "NUMBER_2", "SECOND", "S T A N D"]:
+            pass
+        if player_choice.upper().strip() in ["Q", "QQ", "QQQ", "QU", "QUI", "QUIT", "QUITQUIT", "QUITQUITQUIT", "3", "3.0", "THREE", "#3", "# 3", "NUMBER3", "NUMBER 3", "NUMBER_3", "THIRD", "Q U I T"]:
+            quit()
+
+    if player.total_value <= 21:
+        if dealer.total_value <= 21:
+            print("PLAYER'S HAND (YOUR HAND):\n", player)
+            print("DEALER'S HAND:\n", dealer)
+        else:
+            print("PLAYER'S HAND (YOUR HAND):\n", player, "YOU WIN!!! THE DEALER BUSTED!!!")
+            print("DEALER'S HAND: BUST!!!\n", dealer)
+    else:
+        if dealer.total_value <= 21:
+            print("PLAYER'S HAND (YOUR HAND):\n", player, "BUST!!! YOU LOSE!!!")
+            print("DEALER'S HAND:\n", dealer)
+        else:
+            print("TIE!!! YOU BOTH BUSTED!!!")
+            print("PLAYER'S HAND (YOUR HAND):\n", player)
+            print("DEALER'S HAND:\n", dealer)
+    
+    # Print the results
+    if player.total_value <= 21 and dealer.total_value <= 21:
+        if player.total_value > dealer.total_value:
+            print("PLAYER WINS!")
+        elif player.total_value == dealer.total_value:
+            print("TIE!")
+        else:
+            print("DEALER WINS!")
